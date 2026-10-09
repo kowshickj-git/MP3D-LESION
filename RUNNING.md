@@ -12,6 +12,40 @@ radiologist bookmarked) in axial CT slices. It draws boxes and gives each a
 confidence; it does **not** name a specific disease. The published metric is
 FROC — sensitivity at a fixed number of false positives per image.
 
+## Downloads: trained models and data
+
+Everything too large for the repository is attached to the
+[v1.0 release](https://github.com/kowshickj-git/MP3D-LESION/releases/tag/v1.0):
+the trained detectors (every saved epoch of both runs), the pretrained
+backbone, and DeepLesion parts 01-04 with their annotations. The web app and
+evaluation only need the trained checkpoints:
+
+```bash
+R=https://github.com/kowshickj-git/MP3D-LESION/releases/download/v1.0
+mkdir -p work_dirs/mp3d_lesion_hires work_dirs/mp3d_lesion checkpoints
+curl -L -o work_dirs/mp3d_lesion_hires/epoch_7.pth $R/mp3d_lesion_hires_epoch_7.pth  # final model (run 2)
+curl -L -o work_dirs/mp3d_lesion/latest.pth $R/mp3d_lesion_epoch_12.pth              # run 1
+curl -L -o checkpoints/mp3d63-d720bda1.pth $R/mp3d63-d720bda1.pth                     # backbone, for training
+```
+
+The DeepLesion zips are over GitHub's 2 GB file limit, so each is split into
+nine pieces of about 480 MB that are joined back into NIH's original archive:
+
+```bash
+mkdir -p data/DeepLesion/zips
+for n in 01 02 03 04; do
+  for p in $(seq -f %03g 9); do curl -L -o Images_png_$n.zip.$p $R/Images_png_$n.zip.$p; done
+  cat Images_png_$n.zip.0* > data/DeepLesion/zips/Images_png_$n.zip && rm Images_png_$n.zip.0*
+done
+(cd data/DeepLesion/zips && curl -sL $R/SHA256SUMS.txt | sha256sum -c --ignore-missing)
+curl -L -o DeepLesion_annotation.zip $R/DeepLesion_annotation.zip
+python -m zipfile -e DeepLesion_annotation.zip data/DeepLesion   # annotation/ and DL_info.csv
+python tools/prepare_deeplesion.py --root data/DeepLesion
+```
+
+On Windows without Git Bash, join with `copy /b Images_png_01.zip.0* Images_png_01.zip`
+or open the `.001` piece in 7-Zip.
+
 ## 1. Environment
 
 MMDetection 2.25 needs `mmcv-full` in `[1.3.17, 1.6.0]`, whose prebuilt
@@ -37,6 +71,9 @@ Notes:
   extraction fails with "not enough space" partway through.
 * setuptools must be < 81; newer releases drop `pkg_resources`, which
   `torch.utils.cpp_extension` still imports.
+* `requirements-lock.txt` pins the exact versions of the working venv,
+  including flask for the web app, and installs in one step:
+  `uv pip install -r requirements-lock.txt --extra-index-url https://download.pytorch.org/whl/cu113 --index-strategy unsafe-best-match`.
 
 Verify:
 
@@ -66,7 +103,8 @@ curl -L -C - -o data/DeepLesion/zips/Images_png_01.zip \
   https://nihcc.box.com/shared/static/sp5y2k799v4x1x77f7w1aqp26uyfq7qz.zip
 ```
 
-The remaining URLs are in NIH's `batch_download_zips.py`. Then extract and
+The remaining URLs are in NIH's `batch_download_zips.py`. Parts 01-04, the
+ones used here, are also on the release (see Downloads). Then extract and
 build annotation subsets restricted to the studies actually on disk:
 
 ```bash
@@ -82,6 +120,8 @@ more zips; partially-downloaded archives are skipped.
 curl -L "https://drive.usercontent.google.com/download?id=1jKdJQ83vZrvOT4N_iZeRvhDuyKWiboqi&export=download&confirm=t" \
   -o checkpoints/mp3d63-d720bda1.pth
 ```
+
+The same file is on the release as `mp3d63-d720bda1.pth`.
 
 This is the COCO-supervised MP3D63 model from the paper, **not** a trained
 lesion detector — it is an mmdet-1.x state_dict with `backbone.` / `neck.` /
@@ -215,6 +255,8 @@ and reaches 56.9%.
 # then open http://127.0.0.1:5000
 ```
 
+It loads `work_dirs/mp3d_lesion_hires/epoch_7.pth` (see Downloads).
+
 Drag a CT slice onto the drop zone (or click one of the eight built-in
 samples) and the trained detector boxes the lesions it finds, with a
 confidence for each. The threshold slider has presets matching the measured
@@ -276,8 +318,9 @@ model supplies location, confidence and size; the clinical framing on each
 page is context for the reader, not something inferred from the pixels.
 
 `DL_info.csv` is not in the repo and the NIH Box link for it is dead; the
-build script expects it at `data/DeepLesion/DL_info.csv` and it can be
-fetched from the HuggingFace mirror:
+build script expects it at `data/DeepLesion/DL_info.csv`. It is inside
+`DeepLesion_annotation.zip` on the release, or can be fetched from the
+HuggingFace mirror:
 
 ```bash
 curl -L -o data/DeepLesion/DL_info.csv   https://huggingface.co/datasets/farrell236/DeepLesion/resolve/main/DL_info.csv
