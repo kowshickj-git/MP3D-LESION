@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MP3D Lesion Detector{% if region %} &middot; {{ region.name }}{% endif %}</title>
+<style>
+  :root{
+    --bg:#0f1216; --panel:#171b21; --panel2:#1e242c; --line:#2a323c;
+    --text:#e8edf3; --muted:#95a1b0; --accent:#4da3ff; --hit:#ff5c5c;
+    --gt:#5cd65c;
+  }
+  *{box-sizing:border-box}
+  [hidden]{display:none !important}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font:14px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  a{color:var(--accent)}
+  header{padding:16px 26px;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap}
+  h1{margin:0;font-size:18px;letter-spacing:.2px}
+  h1 a{color:inherit;text-decoration:none}
+  .sub{color:var(--muted);font-size:12.5px}
+  nav{display:flex;gap:5px;flex-wrap:wrap;margin-top:13px}
+  nav a{padding:5px 11px;border-radius:14px;font-size:12.5px;
+        text-decoration:none;color:var(--muted);border:1px solid var(--line);
+        background:var(--panel)}
+  nav a:hover{border-color:var(--accent);color:var(--text)}
+  nav a.on{background:#20344a;border-color:var(--accent);color:#cfe6ff}
+  .wrap{max-width:1200px;margin:0 auto;padding:22px 26px 60px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+        padding:17px}
+  .card h2{margin:0 0 12px;font-size:12.5px;text-transform:uppercase;
+           letter-spacing:.9px;color:var(--muted);font-weight:600}
+  .grid{display:grid;grid-template-columns:352px 1fr;gap:20px;align-items:start}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+
+  /* ---- overview ---- */
+  .hero{margin-bottom:20px}
+  .hero h2{font-size:13px}
+  .hero p{margin:0 0 10px;color:var(--muted);max-width:70ch}
+  .hero .lede{color:var(--text);font-size:15px;max-width:80ch}
+  .dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));
+         gap:16px 26px;margin-top:14px;padding-top:14px;
+         border-top:1px solid var(--line)}
+  .dgrid section{min-width:0}
+  .dgrid h3{margin:0 0 5px;font-size:11.5px;text-transform:uppercase;
+            letter-spacing:.85px;color:var(--accent);font-weight:600}
+  .dgrid p{margin:0 0 8px;font-size:12.8px;line-height:1.62;max-width:none}
+  .dgrid .perf{color:#c7d4e2;background:var(--panel2);
+               border-left:2px solid var(--accent);border-radius:0 5px 5px 0;
+               padding:7px 10px;margin-top:2px}
+  .rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));
+         gap:13px}
+  .rcard{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+         padding:15px 16px;text-decoration:none;color:inherit;display:block;
+         transition:.14s}
+  .rcard:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .rcard b{font-size:15px;display:block;margin-bottom:4px}
+  .rcard p{margin:0 0 9px;color:var(--muted);font-size:12.5px;min-height:34px}
+  .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;
+        background:var(--panel2);border:1px solid var(--line);color:var(--muted);
+        margin-right:5px}
+
+  /* ---- upload ---- */
+  #drop{border:2px dashed #38424f;border-radius:10px;padding:26px 16px;
+        text-align:center;cursor:pointer;transition:.15s;background:var(--panel2)}
+  #drop:hover,#drop.over{border-color:var(--accent);background:#1c2836}
+  #drop p{margin:5px 0;color:var(--muted)}
+  #drop strong{color:var(--text)}
+  input[type=file]{display:none}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:10px;
+       margin:15px 0 5px}
+  .row label{color:var(--muted);font-size:13px}
+  .val{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:600}
+  input[type=range]{width:100%;accent-color:var(--accent)}
+  .presets{display:flex;gap:5px;margin-top:8px}
+  .presets button{flex:1 1 0;min-width:0;background:var(--panel2);
+    color:var(--muted);border:1px solid var(--line);border-radius:6px;
+    padding:6px 3px;cursor:pointer;font-size:11.5px}
+  .presets button:hover{border-color:var(--accent);color:var(--text)}
+  .presets button.on{background:#20344a;border-color:var(--accent);color:#cfe6ff}
+  .chk{display:flex;align-items:center;gap:8px;margin-top:13px;color:var(--muted)}
+  .go{width:100%;margin-top:15px;background:var(--accent);color:#04121f;border:0;
+      border-radius:7px;padding:11px;font-size:14px;font-weight:700;cursor:pointer}
+  .go:disabled{opacity:.5;cursor:default}
+
+  /* ---- samples ---- */
+  .samples{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .samples figure{margin:0;cursor:pointer;border:2px solid transparent;
+    border-radius:7px;overflow:hidden;background:#000;position:relative}
+  .samples figure:hover{border-color:var(--accent)}
+  .samples figure.normal{border-color:#2c5a34}
+  .samples img{width:100%;display:block;aspect-ratio:1;object-fit:cover}
+  .samples figcaption{position:absolute;left:0;right:0;bottom:0;font-size:10px;
+    padding:3px 4px;background:rgba(0,0,0,.74);color:#cfd8e3;text-align:center}
+  .samples figure.normal figcaption{color:#9fe0ad}
+
+  /* ---- result ---- */
+  .viewer{background:#000;border-radius:8px;display:flex;align-items:center;
+    justify-content:center;min-height:400px;overflow:hidden}
+  .viewer img{max-width:100%;display:block}
+  .empty{color:#5d6875;text-align:center;padding:60px 20px;font-size:13px}
+  .stats{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:13px}
+  .stat{background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+    padding:8px 12px;min-width:92px}
+  .stat b{display:block;font-size:18px;line-height:1.25}
+  .stat span{color:var(--muted);font-size:10.5px;text-transform:uppercase;
+    letter-spacing:.6px}
+  table{width:100%;border-collapse:collapse;margin-top:6px;font-size:13px}
+  th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--line);
+        font-variant-numeric:tabular-nums}
+  th{color:var(--muted);font-weight:600;font-size:10.5px;text-transform:uppercase;
+     letter-spacing:.6px}
+  .bar{height:6px;border-radius:3px;background:var(--hit);display:inline-block;
+       vertical-align:middle;margin-right:7px}
+  .band{font-size:11px;padding:2px 7px;border-radius:9px;white-space:nowrap;
+        border:1px solid}
+  .band.sub-centimetre{background:#16242f;border-color:#2c4a5e;color:#9fc7e0}
+  .band.small{background:#152a20;border-color:#2c5a41;color:#9fe0bd}
+  .band.moderate{background:#2c2412;border-color:#6b5320;color:#f2d79b}
+  .band.large{background:#2e1618;border-color:#6d2b31;color:#ffb3b8}
+  tr.hit td{background:#132a1b}
+  .tick{color:#6ee787;font-weight:700}
+  .miss{color:#5d6875}
+  .note{margin-top:13px;padding:10px 12px;border-radius:7px;font-size:12.5px;
+        line-height:1.5}
+  .note.real{background:#12291a;border:1px solid #245c33;color:#a9e8b9}
+  .note.replicated{background:#2c2412;border:1px solid #6b5320;color:#f2d79b}
+  .note.err{background:#2e1618;border:1px solid #6d2b31;color:#ffb3b8}
+  .clear{margin-top:13px;padding:13px 15px;border-radius:8px;background:#122438;
+    border:1px solid #24507a;color:#bcd9f5;font-size:13px}
+  .clear b{color:#e8f2ff;font-size:14px;display:block;margin-bottom:3px}
+  .legend{color:var(--muted);font-size:12px;margin-top:11px}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:2px;
+       margin:0 5px 0 12px}
+  .caveat{margin-top:18px;padding:11px 13px;border-radius:7px;
+    background:#1a1520;border:1px solid #3d2d4a;color:#c9b6da;font-size:12px;
+    line-height:1.55}
+  .spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.25);
+    border-top-color:#04121f;border-radius:50%;display:inline-block;
+    vertical-align:-3px;margin-right:7px;animation:sp .7s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <h1><a href="/">MP3D Lesion Detector</a></h1>
+    <span class="sub">CT lesion localisation &middot; DeepLesion &middot;
+      56.9% sensitivity @ 4 FP/image</span>
+  </div>
+  <nav>
+    <a href="/" class="{{ 'on' if not region }}">All regions</a>
+    {% for r in regions %}
+      <a href="/r/{{ r.key }}" class="{{ 'on' if region and region.key == r.key }}">{{ r.name }}</a>
+    {% endfor %}
+  </nav>
+</header>
+
+<div class="wrap">
+
+{% if not region %}
+  <!-- ============ overview ============ -->
+  <div class="card hero">
+    <h2>What this detects</h2>
+    <p>MP3D finds <strong>lesions</strong> &mdash; the abnormalities a
+      radiologist would bookmark and measure on a CT slice. It is a
+      <strong>single-class detector</strong>: every box it draws is just
+      &ldquo;lesion&rdquo;. It does not name a disease, does not separate
+      benign from malignant, and does not predict which organ a finding sits
+      in.</p>
+    <p>The eight regions below are how <em>DeepLesion labels its ground
+      truth</em>, so each page gives you real cases from that part of the body
+      to test against. Each page also carries one lesion-free slice from the
+      same anatomy as a negative control.</p>
+  </div>
+
+  <div class="rgrid">
+    {% for r in regions %}
+    <a class="rcard" href="/r/{{ r.key }}">
+      <b>{{ r.name }}</b>
+      <p>{{ r.blurb }}</p>
+      <span class="pill">{{ counts.get(r.key, {}).get('lesion', 0) }} lesion cases</span>
+      <span class="pill">{{ counts.get(r.key, {}).get('normal', 0) }} normal</span>
+    </a>
+    {% endfor %}
+  </div>
+
+{% else %}
+  <!-- ============ one region ============ -->
+  <div class="card hero">
+    <h2>{{ region.name }}</h2>
+    <p class="lede">{{ region.blurb }}</p>
+    <div class="dgrid">
+      <section>
+        <h3>What these lesions are</h3>
+        <p>{{ region.pathology }}</p>
+      </section>
+      <section>
+        <h3>Why they get measured</h3>
+        <p>{{ region.why }}</p>
+      </section>
+      <section>
+        <h3>How they look on CT</h3>
+        <p>{{ region.ct }}</p>
+      </section>
+      <section>
+        <h3>What this system does here</h3>
+        <p>For every slice it builds a 9-slice stack, runs the detector, and
+          returns each finding with a confidence, a long and short axis in
+          millimetres, and a size band. Where a radiologist bookmark exists it
+          also reports the overlap, so you can see whether a box is a real hit
+          or a false alarm.</p>
+        <p class="perf">On this page&rsquo;s samples: {{ region.perf }}</p>
+      </section>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <div class="card">
+        <h2>{{ region.name }} samples</h2>
+        <div class="samples" id="samples"></div>
+        <div class="legend">Green-bordered tile is the lesion-free control.
+          Click any tile to run it.</div>
+      </div>
+
+      <div class="card" style="margin-top:17px">
+        <h2>Or upload your own</h2>
+        <div id="drop">
+          <p><strong>Drop a CT slice here</strong></p>
+          <p>or click to browse</p>
+        </div>
+        <input type="file" id="file" accept="image/*">
+        <div id="fname" class="sub" style="margin-top:9px;word-break:break-all"></div>
+
+        <div class="row">
+          <label for="thr">Confidence threshold</label>
+          <span class="val" id="thrval">0.155</span>
+        </div>
+        <input type="range" id="thr" min="0.01" max="0.9" step="0.005" value="0.155">
+        <div class="presets">
+          <button data-thr="0.4543">0.5 FP</button>
+          <button data-thr="0.3172">1 FP</button>
+          <button data-thr="0.155" class="on">2 FP</button>
+          <button data-thr="0.0747">4 FP</button>
+        </div>
+
+        <label class="chk"><input type="checkbox" id="gt" checked>
+          Show radiologist ground truth</label>
+        <button class="go" id="go" disabled>Detect lesions</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Result</h2>
+      <div class="stats" id="stats" hidden>
+        <div class="stat"><b id="s-found">0</b><span>Detected</span></div>
+        <div class="stat"><b id="s-top">&ndash;</b><span>Top score</span></div>
+        <div class="stat"><b id="s-size">&ndash;</b><span>Largest</span></div>
+        <div class="stat"><b id="s-hit">0</b><span>Matched</span></div>
+        <div class="stat"><b id="s-gt">0</b><span>Ground truth</span></div>
+        <div class="stat"><b id="s-ms">0</b><span>Inference ms</span></div>
+      </div>
+
+      <div class="viewer" id="viewer">
+        <div class="empty">Pick a {{ region.name|lower }} sample or upload a
+          slice to see detections.</div>
+      </div>
+
+      <div class="legend" id="legend" hidden>
+        <span class="dot" style="background:var(--hit)"></span>model detection
+        <span class="dot" style="background:var(--gt)"></span>radiologist ground truth
+      </div>
+
+      <div id="note"></div>
+      <div id="table"></div>
+    </div>
+  </div>
+{% endif %}
+</div>
+
+<script>
+const REGION = {{ (region.key if region else None)|tojson }};
+const $ = s => document.querySelector(s);
+
+if (REGION) {
+  const drop = $('#drop'), fileIn = $('#file'), go = $('#go'), thr = $('#thr');
+  let chosen = null;
+
+  drop.onclick = () => fileIn.click();
+  ['dragenter','dragover'].forEach(e =>
+    drop.addEventListener(e, ev => {ev.preventDefault(); drop.classList.add('over');}));
+  ['dragleave','drop'].forEach(e =>
+    drop.addEventListener(e, ev => {ev.preventDefault(); drop.classList.remove('over');}));
+  drop.addEventListener('drop', ev => {
+    if (ev.dataTransfer.files.length) pick(ev.dataTransfer.files[0]);
+  });
+  fileIn.onchange = () => { if (fileIn.files.length) pick(fileIn.files[0]); };
+
+  function pick(f){
+    chosen = f;
+    $('#fname').textContent = 'Selected: ' + f.name;
+    go.disabled = false;
+  }
+
+  thr.oninput = () => {
+    $('#thrval').textContent = (+thr.value).toFixed(3);
+    document.querySelectorAll('.presets button').forEach(b => b.classList.remove('on'));
+  };
+  document.querySelectorAll('.presets button').forEach(b => {
+    b.onclick = () => {
+      thr.value = b.dataset.thr;
+      $('#thrval').textContent = (+b.dataset.thr).toFixed(3);
+      document.querySelectorAll('.presets button').forEach(x => x.classList.remove('on'));
+      b.classList.add('on');
+      if (chosen) send(chosen);
+    };
+  });
+
+  go.onclick = () => { if (chosen) send(chosen); };
+
+  async function send(file){
+    go.disabled = true;
+    go.innerHTML = '<span class="spin"></span>Running model...';
+    $('#note').innerHTML = '';
+    const fd = new FormData();
+    fd.append('image', file);
+    fd.append('score_thr', thr.value);
+    fd.append('show_gt', $('#gt').checked ? '1' : '0');
+    try {
+      const r = await fetch('/api/detect', {method:'POST', body:fd});
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.error || 'request failed');
+      show(j);
+    } catch (e) {
+      $('#note').innerHTML = '<div class="note err">' + e.message + '</div>';
+    }
+    go.disabled = false;
+    go.textContent = 'Detect lesions';
+  }
+
+  function show(j){
+    $('#viewer').innerHTML = '<img src="' + j.image + '" alt="detections">';
+    $('#stats').hidden = false;
+    $('#legend').hidden = false;
+    $('#s-found').textContent = j.detections.length;
+    $('#s-top').textContent = j.detections.length
+        ? (j.detections[0].score*100).toFixed(0) + '%' : '–';
+    const big = j.detections.reduce((m,d) => Math.max(m, d.long_mm), 0);
+    $('#s-size').textContent = big ? big.toFixed(0) + ' mm' : '–';
+    $('#s-hit').textContent = j.hits;
+    $('#s-gt').textContent = j.ground_truth;
+    $('#s-ms').textContent = j.elapsed_ms;
+    $('#note').innerHTML = '<div class="note ' + j.mode + '">' + j.note + '</div>';
+
+    if (!j.detections.length){
+      $('#table').innerHTML = '<div class="clear"><b>No lesions detected</b>'
+        + 'Nothing scored above ' + j.threshold.toFixed(3) + '. The model ranked '
+        + j.total_candidates + ' candidate regions and rejected them all &mdash; '
+        + 'lower the threshold to inspect the weaker ones.'
+        + (j.ground_truth ? ' This slice does carry ' + j.ground_truth
+            + ' bookmarked lesion(s), so this is a miss.' : '')
+        + '</div>';
+      return;
+    }
+
+    let h = '<table><tr><th>#</th><th>Confidence</th><th>Long axis</th>'
+          + '<th>Short axis</th><th>Size band</th><th>Vs truth</th></tr>';
+    j.detections.forEach((d,i) => {
+      const match = j.ground_truth === 0
+        ? '<span class="miss">no truth</span>'
+        : (d.hit ? '<span class="tick">match ' + d.iou.toFixed(2) + '</span>'
+                 : '<span class="miss">IoU ' + d.iou.toFixed(2) + '</span>');
+      h += '<tr class="' + (d.hit ? 'hit' : '') + '"><td>' + (i+1) + '</td>'
+        + '<td><span class="bar" style="width:' + Math.max(4, d.score*55)
+        + 'px"></span>' + (d.score*100).toFixed(1) + '%</td>'
+        + '<td>' + d.long_mm.toFixed(1) + ' mm</td>'
+        + '<td>' + d.short_mm.toFixed(1) + ' mm</td>'
+        + '<td><span class="band ' + d.band + '" title="' + d.band_why + '">'
+        + d.band + '</span></td>'
+        + '<td>' + match + '</td></tr>';
+    });
+    h += '</table>';
+
+    h += '<div class="caveat">Sizes use ' + j.spacing.toFixed(3) + ' mm/px'
+      + (j.spacing_known ? ' from this slice&rsquo;s DICOM spacing'
+                         : ' (assumed &mdash; spacing unknown for this file)')
+      + '. &ldquo;Match&rdquo; means the box overlaps the radiologist&rsquo;s '
+      + 'at IoU &ge; 0.5.'
+      + (j.truth_long_mm ? ' Radiologist measured this lesion at '
+          + j.truth_long_mm + ' mm long axis.' : '')
+      + '</div>';
+    $('#table').innerHTML = h;
+  }
+
+  fetch('/api/samples?region=' + encodeURIComponent(REGION))
+    .then(r => r.json()).then(list => {
+      const box = $('#samples');
+      box.innerHTML = '';
+      list.forEach(s => {
+        const fig = document.createElement('figure');
+        if (s.kind === 'normal') fig.className = 'normal';
+        const cap = s.kind === 'normal' ? 'normal'
+                  : (s.long_mm ? s.long_mm.toFixed(0) + ' mm' : 'lesion');
+        fig.innerHTML = '<img src="/samples/' + s.file + '" alt="' + s.source + '">'
+          + '<figcaption>' + cap + '</figcaption>';
+        fig.title = s.source + (s.kind === 'normal'
+          ? ' (no bookmarked lesion)'
+          : ' - radiologist long axis ' + s.long_mm + ' mm');
+        fig.onclick = async () => {
+          const blob = await (await fetch('/samples/' + s.file)).blob();
+          const f = new File([blob], s.file, {type:'image/png'});
+          pick(f); send(f);
+        };
+        box.appendChild(fig);
+      });
+      const n = new URLSearchParams(location.search).get('demo');
+      if (n !== null && box.children[+n]) box.children[+n].click();
+    });
+}
+</script>
+</body>
+</html>

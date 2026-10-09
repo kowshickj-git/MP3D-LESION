@@ -1,0 +1,330 @@
+[
+ {
+  "file": "bone__000207_05_02__444.png",
+  "region": "bone",
+  "source": "000207_05_02/444.png",
+  "kind": "lesion",
+  "long_mm": 9.9,
+  "short_mm": 7.8,
+  "spacing": 0.691406,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "bone__000193_03_01__458.png",
+  "region": "bone",
+  "source": "000193_03_01/458.png",
+  "kind": "lesion",
+  "long_mm": 32.6,
+  "short_mm": 20.0,
+  "spacing": 0.78125,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "bone__000250_03_01__093.png",
+  "region": "bone",
+  "source": "000250_03_01/093.png",
+  "kind": "lesion",
+  "long_mm": 49.3,
+  "short_mm": 31.0,
+  "spacing": 0.732422,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "bone__normal__000207_07_01__253.png",
+  "region": "bone",
+  "source": "000207_07_01/253.png",
+  "kind": "normal",
+  "gap_from_bookmark": 30,
+  "spacing": 0.728516
+ },
+ {
+  "file": "abdomen__000047_08_01__065.png",
+  "region": "abdomen",
+  "source": "000047_08_01/065.png",
+  "kind": "lesion",
+  "long_mm": 10.0,
+  "short_mm": 7.2,
+  "spacing": 0.78125,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "abdomen__000046_02_02__054.png",
+  "region": "abdomen",
+  "source": "000046_02_02/054.png",
+  "kind": "lesion",
+  "long_mm": 29.8,
+  "short_mm": 26.7,
+  "spacing": 0.78125,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "abdomen__000114_02_01__251.png",
+  "region": "abdomen",
+  "source": "000114_02_01/251.png",
+  "kind": "lesion",
+  "long_mm": 49.9,
+  "short_mm": 44.4,
+  "spacing": 0.742188,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "abdomen__normal__000022_02_01__180.png",
+  "region": "abdomen",
+  "source": "000022_02_01/180.png",
+  "kind": "normal",
+  "gap_from_bookmark": 41,
+  "spacing": 0.742188
+ },
+ {
+  "file": "mediastinum__000177_06_01__022.png",
+  "region": "mediastinum",
+  "source": "000177_06_01/022.png",
+  "kind": "lesion",
+  "long_mm": 9.9,
+  "short_mm": 7.8,
+  "spacing": 0.712891,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "mediastinum__000187_08_01__034.png",
+  "region": "mediastinum",
+  "source": "000187_08_01/034.png",
+  "kind": "lesion",
+  "long_mm": 29.6,
+  "short_mm": 19.4,
+  "spacing": 0.9375,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "mediastinum__000238_05_01__106.png",
+  "region": "mediastinum",
+  "source": "000238_05_01/106.png",
+  "kind": "lesion",
+  "long_mm": 50.2,
+  "short_mm": 23.2,
+  "spacing": 0.816406,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "mediastinum__normal__000177_09_01__123.png",
+  "region": "mediastinum",
+  "source": "000177_09_01/123.png",
+  "kind": "normal",
+  "gap_from_bookmark": 40,
+  "spacing": 0.742188
+ },
+ {
+  "file": "liver__000204_05_01__050.png",
+  "region": "liver",
+  "source": "000204_05_01/050.png",
+  "kind": "lesion",
+  "long_mm": 9.9,
+  "short_mm": 5.2,
+  "spacing": 0.712891,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "liver__000097_02_01__076.png",
+  "region": "liver",
+  "source": "000097_02_01/076.png",
+  "kind": "lesion",
+  "long_mm": 29.3,
+  "short_mm": 22.5,
+  "spacing": 0.898438,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "liver__000114_01_01__220.png",
+  "region": "liver",
+  "source": "000114_01_01/220.png",
+  "kind": "lesion",
+  "long_mm": 49.8,
+  "short_mm": 48.9,
+  "spacing": 0.871094,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "liver__normal__000114_03_02__274.png",
+  "region": "liver",
+  "source": "000114_03_02/274.png",
+  "kind": "normal",
+  "gap_from_bookmark": 30,
+  "spacing": 0.816406
+ },
+ {
+  "file": "lung__000247_04_01__165.png",
+  "region": "lung",
+  "source": "000247_04_01/165.png",
+  "kind": "lesion",
+  "long_mm": 10.0,
+  "short_mm": 7.6,
+  "spacing": 0.851562,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "lung__000250_02_02__113.png",
+  "region": "lung",
+  "source": "000250_02_02/113.png",
+  "kind": "lesion",
+  "long_mm": 30.0,
+  "short_mm": 26.5,
+  "spacing": 0.789062,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "lung__000250_03_02__066.png",
+  "region": "lung",
+  "source": "000250_03_02/066.png",
+  "kind": "lesion",
+  "long_mm": 48.8,
+  "short_mm": 36.2,
+  "spacing": 0.732422,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "lung__normal__000250_03_02__179.png",
+  "region": "lung",
+  "source": "000250_03_02/179.png",
+  "kind": "normal",
+  "gap_from_bookmark": 33,
+  "spacing": 0.732422
+ },
+ {
+  "file": "kidney__000064_02_01__068.png",
+  "region": "kidney",
+  "source": "000064_02_01/068.png",
+  "kind": "lesion",
+  "long_mm": 12.4,
+  "short_mm": 11.6,
+  "spacing": 0.742188,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "kidney__000029_02_01__042.png",
+  "region": "kidney",
+  "source": "000029_02_01/042.png",
+  "kind": "lesion",
+  "long_mm": 30.2,
+  "short_mm": 24.7,
+  "spacing": 0.824219,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "kidney__000016_02_01__333.png",
+  "region": "kidney",
+  "source": "000016_02_01/333.png",
+  "kind": "lesion",
+  "long_mm": 40.5,
+  "short_mm": 27.5,
+  "spacing": 0.82,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "kidney__normal__000067_02_01__265.png",
+  "region": "kidney",
+  "source": "000067_02_01/265.png",
+  "kind": "normal",
+  "gap_from_bookmark": 50,
+  "spacing": 0.9375
+ },
+ {
+  "file": "soft-tissue__000165_02_01__046.png",
+  "region": "soft-tissue",
+  "source": "000165_02_01/046.png",
+  "kind": "lesion",
+  "long_mm": 10.3,
+  "short_mm": 7.8,
+  "spacing": 0.455078,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "soft-tissue__000034_01_01__025.png",
+  "region": "soft-tissue",
+  "source": "000034_01_01/025.png",
+  "kind": "lesion",
+  "long_mm": 33.6,
+  "short_mm": 22.7,
+  "spacing": 0.429688,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "soft-tissue__000097_01_01__092.png",
+  "region": "soft-tissue",
+  "source": "000097_01_01/092.png",
+  "kind": "lesion",
+  "long_mm": 50.2,
+  "short_mm": 43.6,
+  "spacing": 0.976562,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "soft-tissue__normal__000172_05_01__104.png",
+  "region": "soft-tissue",
+  "source": "000172_05_01/104.png",
+  "kind": "normal",
+  "gap_from_bookmark": 30,
+  "spacing": 0.851562
+ },
+ {
+  "file": "pelvis__000187_12_02__555.png",
+  "region": "pelvis",
+  "source": "000187_12_02/555.png",
+  "kind": "lesion",
+  "long_mm": 9.6,
+  "short_mm": 7.2,
+  "spacing": 0.904297,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "pelvis__000047_03_01__101.png",
+  "region": "pelvis",
+  "source": "000047_03_01/101.png",
+  "kind": "lesion",
+  "long_mm": 30.9,
+  "short_mm": 25.7,
+  "spacing": 0.859375,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "pelvis__000097_01_01__116.png",
+  "region": "pelvis",
+  "source": "000097_01_01/116.png",
+  "kind": "lesion",
+  "long_mm": 50.3,
+  "short_mm": 49.9,
+  "spacing": 0.976562,
+  "split": 3,
+  "noisy": 0
+ },
+ {
+  "file": "pelvis__normal__000255_05_01__264.png",
+  "region": "pelvis",
+  "source": "000255_05_01/264.png",
+  "kind": "normal",
+  "gap_from_bookmark": 30,
+  "spacing": 0.9375
+ }
+]
