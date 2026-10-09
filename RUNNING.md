@@ -12,6 +12,21 @@ radiologist bookmarked) in axial CT slices. It draws boxes and gives each a
 confidence; it does **not** name a specific disease. The published metric is
 FROC — sensitivity at a fixed number of false positives per image.
 
+## Quick start on another Windows PC
+
+Download the repository (Code > Download ZIP and extract it, or `git clone`)
+and double-click `run_project.bat`. The first run needs internet and about
+8 GB of free disk space, and takes 15-30 minutes: it installs the Visual C++
+runtime if missing, then uv, Python 3.10 and the exact package versions from
+`requirements-lock.txt` into `.tools/` and `.venv/`, and downloads the final
+model, the annotations and the CT slices around the 32 built-in samples from
+the release. Then the web app starts and the browser opens. Later runs skip
+straight to the app and work offline.
+
+It runs on an NVIDIA GPU when one works with this CUDA 11.3 build and falls
+back to the CPU otherwise (a few seconds per image); set `MP3D_DEVICE=cpu` to
+force the CPU. If port 5000 is taken the app uses the next free port.
+
 ## Downloads: trained models and data
 
 Everything too large for the repository is attached to the

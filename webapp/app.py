@@ -24,13 +24,17 @@ What the model does and does not do
     and the UI says so.
 """
 import base64
+import copy
 import csv
 import json
 import os
 import os.path as osp
 import re
+import socket
 import sys
+import threading
 import time
+import webbrowser
 
 sys.path.insert(0, osp.dirname(osp.dirname(osp.abspath(__file__))))
 
@@ -246,10 +250,21 @@ def load_model():
     from mmcv.runner import load_checkpoint
     load_checkpoint(model, CHECKPOINT, map_location='cpu')
     model.CLASSES = ('Lesion', )
-    device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
-    model.to(device).eval()
-    MODEL, CFG = model, cfg
+    model.eval()
+    MODEL, CFG, device = model, cfg, 'cpu'
     POST_PIPELINE = Compose(cfg.data.test.pipeline[1:])   # skip the file loader
+    # A GPU can be present yet unusable here (too new for this CUDA 11.3 build,
+    # or too little memory), so run one blank slice on it before committing.
+    # MP3D_DEVICE=cpu skips the GPU entirely.
+    if torch.cuda.is_available() and os.environ.get('MP3D_DEVICE') != 'cpu':
+        try:
+            MODEL = copy.deepcopy(model).to('cuda:0')
+            run_detection(np.zeros((512, 512, NUM_SLICE), np.float32), 1.0)
+            device = 'cuda:0'
+        except Exception as exc:
+            print('GPU not usable (%s), running on the CPU instead'
+                  % (str(exc).strip().splitlines() or [type(exc).__name__])[0], flush=True)
+            MODEL = model
     print('model ready on ' + device, flush=True)
     return device
 
@@ -507,8 +522,24 @@ def api_detect():
         detections=out)
 
 
+def free_port(first):
+    """`first`, or the next port after it that nothing else is using."""
+    for port in range(first, first + 50):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            try:
+                s.bind(('127.0.0.1', port))
+                return port
+            except OSError:
+                continue
+    return first
+
+
 if __name__ == '__main__':
     load_metadata()
     load_model()
-    print('open http://127.0.0.1:5000', flush=True)
-    app.run(host='127.0.0.1', port=5000, debug=False, threaded=False)
+    port = free_port(int(os.environ.get('MP3D_PORT', 5000)))
+    url = 'http://127.0.0.1:%d' % port
+    print('open ' + url, flush=True)
+    if os.environ.get('MP3D_OPEN_BROWSER') == '1':
+        threading.Timer(1.5, webbrowser.open, [url]).start()
+    app.run(host='127.0.0.1', port=port, debug=False, threaded=False)
